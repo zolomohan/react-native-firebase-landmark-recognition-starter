@@ -8,11 +8,9 @@ import {
   Image,
 } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import ml from '@react-native-firebase/ml';
 
 export default function App() {
   const [image, setImage] = useState();
-  const [landmarks, setLandmarks] = useState([]);
   const onTakePhoto = () => launchCamera({ mediaType: 'image' }, onMediaSelect);
 
   const onSelectImagePress = () =>
@@ -21,17 +19,13 @@ export default function App() {
   const onMediaSelect = async (media) => {
     if (!media.didCancel) {
       setImage(media.uri);
-      const landmarks = await ml().cloudLandmarkRecognizerProcessImage(
-        media.uri,
-      );
-      setLandmarks(landmarks);
-      console.log(landmarks);
+      // Recognize Landmarks Here
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Text style={styles.title}>Landmark Recognition</Text>
+      <Text style={styles.title}>Text Recognition</Text>
       <View>
         <TouchableOpacity style={styles.button} onPress={onTakePhoto}>
           <Text style={styles.buttonText}>Take Photo</Text>
@@ -39,17 +33,15 @@ export default function App() {
         <TouchableOpacity style={styles.button} onPress={onSelectImagePress}>
           <Text style={styles.buttonText}>Pick a Photo</Text>
         </TouchableOpacity>
-        <Image source={{ uri: image }} style={styles.image} />
+        <Image
+          resizeMode="contain"
+          source={{ uri: image }}
+          style={styles.image}
+        />
       </View>
-      {landmarks.map((item, i) => (
-        <View style={{ marginTop: 20, width: 300 }} key={i}>
-          <Text>Landmark: {item.landmark}</Text>
-          <Text>Bounding Box: {JSON.stringify(item.boundingBox)}</Text>
-          <Text>Coordinates: {JSON.stringify(item.locations)}</Text>
-          <Text>Confidence: {item.confidence}</Text>
-          <Text>Entity Id: {item.entityId}</Text>
-        </View>
-      ))}
+      <View style={{ marginTop: 30 }}>
+        <Text style={{ fontSize: 30 }}>{result.text}</Text>
+      </View>
     </ScrollView>
   );
 }
@@ -65,11 +57,11 @@ const styles = StyleSheet.create({
   image: {
     height: 300,
     width: 300,
-    marginTop: 20,
+    marginTop: 30,
     borderRadius: 10,
   },
   button: {
-    backgroundColor: '#47477b',
+    backgroundColor: '#494e5a',
     color: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
